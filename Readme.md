@@ -10,13 +10,13 @@ https://forum.arduino.cc/index.php?topic=231655.0
 * Souldering iron used to connect the I2C to the 1602 LCD
 
 ## Next steps
-* Then run tests/liquid_crystal to see the 'hello world' example
+* Calculate Steinhart-Hart model coefficients for sensors
+* Determine how voltage divider should be setup (i.e. what base resistance should be used?)
 
 ## Items (all prices $AUD)
 * 1 x meat sensor replacement Inkbird, $11.99 + $1.99, https://www.ebay.com.au/itm/PROBE-for-INKBIRD-IBT-4X-meat-thermometer-replacement-Accessories-REPLACE-sensor/222779014478?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2648
 * 1 x bbq clip sensor replacement Inkbird, $10.99 + $1.99, https://www.ebay.com.au/itm/PROBE-Inkbird-cooking-thermometer-sensor-replacement-grill-clip-cable-replace/322770203997?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2648
-* ? 2 x 2.5MM Stereo Chassis Socket, $1.85, https://www.jaycar.com.au/2-5mm-stereo-chassis-socket/p/PS0107
-* ? 2 x 3.5mm Stereo Plug to 2.5mm Stereo Socket, $3.95, https://www.jaycar.com.au/3-5mm-stereo-plug-to-2-5mm-stereo-socket/p/PA3536
+* 2 x 2.5MM Stereo Chassis Socket, $1.85, https://www.jaycar.com.au/2-5mm-stereo-chassis-socket/p/PS0107
 * 1 x I2C
 * 1 x 1602 LCD
 
