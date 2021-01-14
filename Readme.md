@@ -1,6 +1,8 @@
 # Readme
 
-The purpose of this project is to make a device to monitor bbq air and meat temperature to cook theperfect meal!
+The purpose of this project is to make a device to monitor bbq air and meat temperature to cook theperfect meal! The image below shows the current progress of the project - when a perfect steak is shown, this project is functional!
+
+<img src="progress_pic.jpg" width="600">
 
 ## Main Tutorial Following
 https://forum.arduino.cc/index.php?topic=231655.0
