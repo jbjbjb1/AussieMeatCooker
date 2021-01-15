@@ -12,15 +12,17 @@ https://forum.arduino.cc/index.php?topic=231655.0
 * Souldering iron used to connect the I2C to the 1602 LCD
 
 ## Next steps
-* Calculate Steinhart-Hart model coefficients for sensors
-* Determine how voltage divider should be setup (i.e. what base resistance should be used?)
+* Soulder the 2.5MM Stereo Chassis Socket and connect the sensor & test
+* Update ardiuno code to say "LOW" or "HIGH" if sensor is reading out of range
+* Do a test in the oven with the air sensor to see if the resistance values are the same as the meat sensor
+* Test the resistance of the sensor at a greater temperature range
 
 ## Items (all prices $AUD)
 * 1 x meat sensor replacement Inkbird, $11.99 + $1.99, https://www.ebay.com.au/itm/PROBE-for-INKBIRD-IBT-4X-meat-thermometer-replacement-Accessories-REPLACE-sensor/222779014478?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2648
 * 1 x bbq clip sensor replacement Inkbird, $10.99 + $1.99, https://www.ebay.com.au/itm/PROBE-Inkbird-cooking-thermometer-sensor-replacement-grill-clip-cable-replace/322770203997?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2648
 * 2 x 2.5MM Stereo Chassis Socket, $1.85, https://www.jaycar.com.au/2-5mm-stereo-chassis-socket/p/PS0107
-* 1 x I2C
-* 1 x 1602 LCD
+* 1 x I2C   (from Arduino kit)
+* 1 x 1602 LCD  (from Arduino kit)
 
 ## How to use
 * Install app 'Serial USB terminal' on mobile.
