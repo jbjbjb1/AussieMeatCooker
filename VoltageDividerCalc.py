@@ -34,7 +34,7 @@ def t_o(r_range):
     r_range = r_range * 1000    # convert from kOhm to Ohm
     return 1/(A + B*np.log(r_range) + C*(np.log(r_range))**3) - 273.15
 
-fig, axs = plt.subplots(3, figsize=(9, 9))
+fig, axs = plt.subplots(2, figsize=(8, 6))
 fig.subplots_adjust(
     top=0.88,
     bottom=0.11,
@@ -46,21 +46,23 @@ fig.subplots_adjust(
 
 r_range = np.arange(r2, r1, 1)
 
-for x in range(10, 100, 20):
+for x in range(10, 60, 10):
     axs[0].plot(v_o_r(v_s, r_range, x), r_range, label=f'R_o {x} (kOhm)')
 axs[0].set_title('Voltage out against resistance')
 axs[0].set(xlabel='V_o (V)', ylabel='R0 (kOhm)')
 axs[0].legend(loc='upper left', bbox_to_anchor=(1.02, 1))
 
-for x in range(10, 100, 20):
+for x in range(10, 60, 10):
     axs[1].plot(t_o(r_range), v_o_r(v_s, r_range, x), label=f'R_o {x} (kOhm)')
 axs[1].set_title('Temperature against voltage out')
 axs[1].set(xlabel='Temp (C)', ylabel='V_o (V)')
 axs[1].legend(loc='upper left', bbox_to_anchor=(1.02, 1))
 
+"""
 axs[2].plot(t_o(r_range), r_range)
 axs[2].set_title('Temperature vs thermister resistance')
 axs[2].set(xlabel='Temp (C)', ylabel='R0 (kOhm)')
+"""
 
 fig.tight_layout()
 plt.show()

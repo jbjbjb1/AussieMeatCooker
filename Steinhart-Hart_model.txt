@@ -1,5 +1,4 @@
 # For:  10k ohm resister demo setup (measured data is made-up)
-# From: https://thinksrs.com/downloads/programs/Therm%20Calc/NTCCalibrator/NTCcalculator.htm
 
 # Measured data:
 Temp, Resistance
@@ -7,6 +6,7 @@ Temp, Resistance
 25, 4700
 100, 1500
 
+# Steinhart-Hart model coefficients
 A = -1.247037951 e-3
 B = 5.155847023 e-4
 C = 3.997113292 e-7
