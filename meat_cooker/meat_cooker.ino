@@ -14,12 +14,12 @@ Timer t;
 
 float air;                      // BBQ air temperature
 float meat;                     // Meat temperature
-float vin = 4.98;               // DC Voltage as measured with DMM between +5V and GND
+float vin = 5;                  // DC Voltage as measured with DMM between +5V and GND
 float r2 = 20000;               // Resistance in ohms of your fixed resistor
 
-float A = 1.839472271 * pow(10, -3);      // "A" Coeffecient in Steinhart-Hart Equation
-float B = 0.6807883650 * pow(10, -4);     // "B"
-float C = 6.022892289 * pow(10, -7);      // "C"
+float A = 0.8975771660 * pow(10, -3);      // "A" Coeffecient in Steinhart-Hart Equation
+float B = 2.067767238 * pow(10, -4);     // "B"
+float C = 1.742614938 * pow(10, -7);      // "C"
 
 // Part 2: The "Setup" function displays connection info on the LCD, and calls our other functions (readSensors and updateDisplay) on a fixed interval based on Timer "t":
 
@@ -35,9 +35,9 @@ void setup()
     Serial.println("Meat Cooker!");             // Output to serial too
     delay(1000); 
 
-    t.every(4000, readSensors);
-    t.every(4000, updateDisplay);
-    t.every(4000, updateSerial);  
+    t.every(3000, readSensors);
+    t.every(3000, updateDisplay);
+    t.every(3000, updateSerial);  
 }                      
 
 // Part 3: The main loop essentially just updates the timer:
@@ -52,12 +52,12 @@ void loop()
 void readSensors()
 {
     float a0 = analogRead(A0);                                   // This reads the "voltage" value on A0. Value is actually divided into 1024 steps from 0-1023.
-    float v0 = a0 * (5/1024);                                    // Converts A0 value to an actual voltage (5.0V / 1024 steps)
+    float v0 = a0 * 0.0048828125;                                // Converts A0 value to an actual voltage (5.0V / 1024 steps)
     float r0 = (((r2 * vin) / v0) - r2);                         // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
     float logr0 = log(r0);                                       // Natural log of thermistor resistance used in Steinhart-Hart Equation
     float logcubed0 = logr0 * logr0 * logr0;                     // The cube of the above value
     float k0 = 1.0 / (A + (B * logr0) + (C * logcubed0));        // Steinhart-Hart Equation to calculate temperature in Kelvin
-    float c0 = k0 - 273.15;                                      // Convert temperature K to C
+    float c0 = k0 - 273.15 - 1;                                  // Convert temperature K to C, lower temp by 1 C
 
 if (isnan(c0))                                                   // If value is not a number, assign an arbitrary value
 {
@@ -69,12 +69,12 @@ else
 }
 
 float a1 = analogRead(A1);                                       // Same code as above. Repeat for as many sensors as you need to connect.
-float v1 = a1 * (5/1024);
+float v1 = a1 * 0.0048828125;
 float r1 = (((r2 * vin) / v1) - r2);
 float logr1 = log(r1);
 float logcubed1 = logr1 * logr1 * logr1;
 float k1 = 1.0 / (A + (B * logr1) + (C * logcubed1));
-float c1 = k1 - 273.15;  
+float c1 = k1 - 273.15 - 1;  
 
 if (isnan(c1))
 {
@@ -84,6 +84,16 @@ else
 {
     meat = c1;
 }
+
+
+/* // Debugging
+Serial.print("Meat: A1 sig.: ");
+Serial.print(a1);
+Serial.print("[], Vo: ");
+Serial.print(v1, 2);
+Serial.print("V, Rt: ");
+Serial.print(r1/1000, 1);
+Serial.println("kOhm."); */
 }
 
 // Part 5: The "updateDisplay" function displays the temperature values on the LCD:
