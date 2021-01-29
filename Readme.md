@@ -25,9 +25,11 @@ https://forum.arduino.cc/index.php?topic=231655.0
 * 1 x 1602 LCD  (from Arduino kit)
 
 ## How to use
-* Install app 'Serial USB terminal' on mobile.
-* In settings, set Baud Rate to 9600
-* Connect sensors by 2.5mm jack, connect usb from Arduino to mobile and in the app click the connect button
+* Setup Arduino as shown in schematic. Load on program meat_cooker\meat_cooker.ino
+* Install app 'Serial USB terminal' on mobile, in settings, set Baud Rate to 9600
+* Connect sensors by 2.5mm jacks, connect usb from Arduino to mobile and in the app click the connect button
+* Start cooking!
+* Use 
 
 ## Next steps
 * Add rate of change of temperature per minute to project. Useful to track rate of cooking.
