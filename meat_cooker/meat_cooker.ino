@@ -76,14 +76,14 @@ void readSensors()
 
 if (isnan(c0))                                                   // If value is not a number, assign an arbitrary value
 {
-   air_r = int(1);
-   air = int(1);
+   meat_r = int(1);
+   meat = int(1);
 }
 else
 {
     
-    air_r = (c0 - air) / (update_r/(1000*60));                   // This is the rate of temp change in deg C/min
-    air = c0;                                                    // Otherwise use the calculated value
+    meat_r = (c0 - meat) * ((1000*60)/update_r);                  // This is the rate of temp change in deg C/min
+    meat = c0;                                                    // Otherwise use the calculated value
 }
 
 // Read air aligator clip
@@ -97,13 +97,13 @@ float c1 = k1 - 273.15;
 
 if (isnan(c1))
 {
-    meat_r = int(1);
-    meat = int(1);
+    air_r = int(1);
+    air = int(1);
 }
 else
 {
-    meat_r = (c1 - meat) / (update_r/(1000*60));
-    meat = c1;
+    air_r = (c1 - air) * ((1000*60)/update_r);
+    air = c1;
 }
 
 
@@ -124,14 +124,14 @@ void updateDisplay()
     lcd.clear();
 
     lcd.setCursor(0,0);
-    lcd.print("BBQ :");
+    lcd.print("Air :");
     lcd.print(air, 0);
     lcd.setCursor(9,0);         //  Set to appear at fixed point so below text does not move
     lcd.print("@ ");
     lcd.print(air_r, 0);
     
     lcd.setCursor(0,1);
-    lcd.print("Meat:");
+    lcd.print("Prb1:");
     lcd.print(meat, 0);
     lcd.setCursor(9,1);
     lcd.print("@ ");
@@ -143,10 +143,10 @@ void updateDisplay()
 void updateSerial()
 {
     
-    Serial.print("BBQ: ");
+    Serial.print("Air : ");
     Serial.print(air, 1);
     Serial.print(" C, ");
-    Serial.print("Meat: ");
+    Serial.print("Prb1: ");
     Serial.print(meat, 1);
     Serial.println(" C");
 }
