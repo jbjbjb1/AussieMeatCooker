@@ -14,6 +14,8 @@ Timer t;
 
 float meat;                     // Meat temperature
 float air;                      // BBQ air temperature
+float meat_ = 20;               // Meat temperature, for rate of change function
+float air_ = 20;                // BBQ air temperature, for rate of change function
 float meat_r;                   // Rate change meat temperature
 float air_r;                    // Rate change BBQ air temperature
 float update_r = 3000;          // Update rate for sensors, milliseconds
@@ -49,7 +51,8 @@ void setup()
     Serial.println("Meat Cooker!");             // Output to serial too
     delay(5000); 
 
-    t.every(update_r, readSensors);
+    t.every(update_r, updateTemp);
+    t.every(update_r*2, updateTempRate);
     t.every(update_r, updateDisplay);
     t.every(update_r, updateSerial);  
 }                      
@@ -61,10 +64,10 @@ void loop()
     t.update(); 
 }
 
-// Part 4: The "readSensors" function does exactly that; it reads the sensor and calculates the temperature:
+// Part 4: Functions to get the probe temperatures when required.
 
-void readSensors()
-{
+float T_meat(){
+
     // Read meat sharp probe
     float a0 = analogRead(A0);                                   // This reads the "voltage" value on A0. Value is actually divided into 1024 steps from 0-1023.
     float v0 = a0 * 0.0048828125;                                // Converts A0 value to an actual voltage (5.0V / 1024 steps)
@@ -74,53 +77,68 @@ void readSensors()
     float k0 = 1.0 / (A_0 + (B_0 * logr0) + (C_0 * logcubed0));  // Steinhart-Hart Equation to calculate temperature in Kelvin
     float c0 = k0 - 273.15;                                      // Convert temperature K to C
 
-if (isnan(c0))                                                   // If value is not a number, assign an arbitrary value
-{
-   meat_r = int(1);
-   meat = int(1);
+    if (isnan(c0)){                                              // If value is not a number, assign an arbitrary value
+        meat = int(1);
+    }
+    else{ 
+        meat = c0;                                                    // Otherwise use the calculated value
+    }
+    return meat;
 }
-else
-{
+
+float T_air(){
+
+    // Read air aligator clip
+    float a1 = analogRead(A1);                                       // Same code as above. Repeat for as many sensors as you need to connect.
+    float v1 = a1 * 0.0048828125;
+    float r1 = (((r_1 * vin) / v1) - r_1);
+    float logr1 = log(r1);
+    float logcubed1 = logr1 * logr1 * logr1;
+    float k1 = 1.0 / (A_1 + (B_1 * logr1) + (C_1 * logcubed1));
+    float c1 = k1 - 273.15;  
+
+    if (isnan(c1)){
+        air = int(1);
+    }
+    else{
+        air = c1;
+    }
+    return air;
+}
+
+
+// Part 4.1 Update temperatures for dsiplay
+void updateTemp(){
+    meat = T_meat();
+    air = T_air();
+}
+
+// Part 4.2 Update rate of temperature change
+void updateTempRate(){
+    float meat_n = T_meat();
+    float air_n = T_air();
     
-    meat_r = (c0 - meat) * ((1000*60)/update_r);                  // This is the rate of temp change in deg C/min
-    meat = c0;                                                    // Otherwise use the calculated value
-}
-
-// Read air aligator clip
-float a1 = analogRead(A1);                                       // Same code as above. Repeat for as many sensors as you need to connect.
-float v1 = a1 * 0.0048828125;
-float r1 = (((r_1 * vin) / v1) - r_1);
-float logr1 = log(r1);
-float logcubed1 = logr1 * logr1 * logr1;
-float k1 = 1.0 / (A_1 + (B_1 * logr1) + (C_1 * logcubed1));
-float c1 = k1 - 273.15;  
-
-if (isnan(c1))
-{
-    air_r = int(1);
-    air = int(1);
-}
-else
-{
-    air_r = (c1 - air) * ((1000*60)/update_r);
-    air = c1;
-}
-
-
-/* // Debugging
-Serial.print("Meat: A1 sig.: ");
-Serial.print(a1);
-Serial.print("[], Vo: ");
-Serial.print(v1, 2);
-Serial.print("V, Rt: ");
-Serial.print(r1/1000, 1);
-Serial.println("kOhm."); */
+    Serial.print(meat_n, 1);
+    Serial.print("-");
+    Serial.print(meat_, 1);
+    Serial.print("=");
+    Serial.print(meat_n - meat_, 1);
+    Serial.print(", const: ");
+    Serial.print(10, 1);
+    Serial.print(", @: ");
+    
+    meat_r = (meat_n - meat_) * 10;     // for 10, can't get ((1000.0*60.0)/(update_r*2.0)) working
+    air_r = (air_n - air_) * 10;
+    meat_ = meat_n;
+    air_ = air_n;
+    
+    Serial.println(meat_r, 1);
 }
 
 // Part 5: The "updateDisplay" function displays the temperature values on the LCD:
 
-void updateDisplay()
-{
+void updateDisplay(){
+
     lcd.clear();
 
     lcd.setCursor(0,0);
@@ -128,21 +146,20 @@ void updateDisplay()
     lcd.print(air, 0);
     lcd.setCursor(9,0);         //  Set to appear at fixed point so below text does not move
     lcd.print("@ ");
-    lcd.print(air_r, 0);
+    lcd.print(air_r, 1);
     
     lcd.setCursor(0,1);
     lcd.print("Prb1:");
     lcd.print(meat, 0);
     lcd.setCursor(9,1);
     lcd.print("@ ");
-    lcd.print(meat_r, 0);
+    lcd.print(meat_r, 1);
 }
 
 // Part 6: Update the serial output:
 
-void updateSerial()
-{
-    
+void updateSerial(){
+
     Serial.print("Air : ");
     Serial.print(air, 1);
     Serial.print(" C, ");
