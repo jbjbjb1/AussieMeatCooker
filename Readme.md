@@ -1,21 +1,19 @@
 # Readme
 
-The purpose of this project is to make a device to monitor bbq air and meat temperature to cook theperfect meal! The image below shows the current progress of the project - when a perfect steak is shown, this project is functional!
+The purpose of this project is to make a device to monitor bbq air and meat temperature to cook the perfect steak! The image below shows the current progress of the project - when a perfect steak is shown, this project is functional!
 
 <img src="progress_pic.jpg" width="600">
 
-## Main Tutorial Following
-https://forum.arduino.cc/index.php?topic=231655.0
+This project is springboarading off some great work done here: https://forum.arduino.cc/index.php?topic=231655.0
 
-## Steps completed (top most recent)
-* Arduino screen is working and showing temperatures using potentiometer/resistor as input 1 and 2
-* Souldering iron used to connect the I2C to the 1602 LCD
+## Steps completed (top oldest)
+* Got code working, used potentiometer to simulate different temperatures (as resitances)
+* Arduino screen working (I2C to the 1602 LCD) and showing temperatures
+* Sensors arrived, did calibration and calculated Steinhart-Hart model coefficients
+* Added functionality for rate of change of temperature
 
 ## Next steps
-* Soulder the 2.5MM Stereo Chassis Socket and connect the sensor & test
-* Update ardiuno code to say "LOW" or "HIGH" if sensor is reading out of range
-* Do a test in the oven with the air sensor to see if the resistance values are the same as the meat sensor
-* Test the resistance of the sensor at a greater temperature range
+* Put on ESP32 board with bluetooth (similar to https://github.com/dereulenspiegel/ibbq-gateway)
 
 ## Items (all prices $AUD)
 * 1 x meat sensor replacement Inkbird, $11.99 + $1.99, https://www.ebay.com.au/itm/PROBE-for-INKBIRD-IBT-4X-meat-thermometer-replacement-Accessories-REPLACE-sensor/222779014478?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2648
@@ -29,12 +27,4 @@ https://forum.arduino.cc/index.php?topic=231655.0
 * Install app 'Serial USB terminal' on mobile, in settings, set Baud Rate to 9600
 * Connect sensors by 2.5mm jacks, connect usb from Arduino to mobile and in the app click the connect button
 * Start cooking!
-* Use 
-
-## Next steps
-* Add rate of change of temperature per minute to project. Useful to track rate of cooking.
-* 3D print own case for enclosure: https://hackaday.com/2017/08/21/a-detailed-guide-for-3d-printing-enclosures/ (or try to replicate https://core-electronics.com.au/clear-enclosure-for-arduino-electronics-enclosure-1-0.html)
-* Use an ESP board with inbuilt bluietooth (no screen), and have a re-chargeable battery using something like this: https://www.jaycar.com.au/arduino-compatible-lithium-battery-usb-charger-module/p/XC4502 - here is a complete project: https://github.com/dereulenspiegel/ibbq-gateway
-
-## Notes during setup
-* A lot of problems can come from not having the correct libraries for the Ardunio code
+* Use
