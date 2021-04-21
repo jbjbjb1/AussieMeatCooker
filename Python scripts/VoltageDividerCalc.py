@@ -7,22 +7,26 @@ import numpy as np
 # * Convert to Class, use json to define inputs required
 
 # Inputs
-t1 = -10
-t2 = 110
-r1 = 221.3
-r2 = 1.870
-v_s = 5
-steps = 1024
+t1 = 50
+t2 = 300
+r1 = 17.42
+r2 = 0.054
+v_s = 3.3
+steps = 4095
 
-A = 1.839472271  * 10** -3
-B = 0.6807883650 * 10** -4
-C = 6.022892289  * 10** -7
+A = 0.9482846445  * 10** -3
+B = 1.952744345 * 10** -4
+C = 2.570293116  * 10** -7
+
+plot_range = np.linspace(1, 1, 1)
 
 # Calculations
 t_step = (t2 - t1) / steps
 print(f'Minimum change in temperature is {t_step:.2f} C.')
 t_mid = (t2 - t1) / 2
 print(f'Mid temperature point is {t_mid:.2f} C.')
+# TODO
+print(f'The min/max voltage reading in will be {a} and {b} V.')
 
 # Plot
 def v_o_r(v_s, r_range, r):
@@ -46,13 +50,13 @@ fig.subplots_adjust(
 
 r_range = np.arange(r2, r1, 1)
 
-for x in range(10, 60, 10):
+for x in plot_range:
     axs[0].plot(v_o_r(v_s, r_range, x), r_range, label=f'R_o {x} (kOhm)')
 axs[0].set_title('Voltage out against resistance')
 axs[0].set(xlabel='V_o (V)', ylabel='R0 (kOhm)')
 axs[0].legend(loc='upper left', bbox_to_anchor=(1.02, 1))
 
-for x in range(10, 60, 10):
+for x in plot_range:
     axs[1].plot(t_o(r_range), v_o_r(v_s, r_range, x), label=f'R_o {x} (kOhm)')
 axs[1].set_title('Temperature against voltage out')
 axs[1].set(xlabel='Temp (C)', ylabel='V_o (V)')

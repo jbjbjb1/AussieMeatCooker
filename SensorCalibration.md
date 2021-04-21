@@ -1,5 +1,8 @@
-# Sensor calibration (meat)
+# ESP32 Calibration
+* Used ESP32 tool espefuse.py (https://github.com/espressif/esptool/wiki/espefuse) to get the calibration value for the ESP32 as documented here (https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html).
+* On windows, with esptools installed from pip, used `python -m espefuse --port COM6 adc_info`, the  resut was: "ADC VRef calibration: 1128mV".
 
+# Sensor calibration
 ## Measurements
 For meat sensor (sharp probe type):
 Temp, Resistance (Ohm)
@@ -27,7 +30,7 @@ B = 1.952744345 e-4
 C = 2.570293116 e-7
 
 ## Determining voltage divider resistance
-Following this tutorial (https://www.jameco.com/Jameco/workshop/TechTip/temperature-measurement-ntc-thermistors.html) to understand fixed resistance for voltage divider. VoltageDividerCalc.py has calculations testing paramaters. Ardunio is 10 bit so has range of 1024 values (0-1023). Then, following this paper (http://unsworks.unsw.edu.au/fapi/datastream/unsworks:56332/bin32ff80f2-1c1e-4bb2-9e86-8843f5423fbb?view=true) to find the best relationship for the fixed resistance for voltage dividers is:
+Following this tutorial (https://www.jameco.com/Jameco/workshop/TechTip/temperature-measurement-ntc-thermistors.html) to understand fixed resistance for voltage divider. VoltageDividerCalc.py has calculations testing paramaters. ESP32 is 12 bit so has range of 4095 values (0-4094). Then, following this paper (http://unsworks.unsw.edu.au/fapi/datastream/unsworks:56332/bin32ff80f2-1c1e-4bb2-9e86-8843f5423fbb?view=true) to find the best relationship for the fixed resistance for voltage dividers is:
 
 R_o = (R_min + R_max)^(1/2)
 
@@ -49,7 +52,8 @@ For the sensor I expect they will need to work in ranges:
 Calculating sqrt(17.42 * 0.054) = 0.97 kOhm
 So, try 1 kOhm fixed resistor value.
 
-# Refinement
-* Use a higher quality multimeter.
-* Calibrate at temperature of 250 or 300 C.
-* I did not connect the leads of the multimeter together to measure the resistance when measuring "nothing"
+# Voltage consideration
+* Input voltage is 3.3V
+* Range of possible output voltages are:
+    * Air: thermister: 17.42k & fixed: 1k --> v_in = 
+    * Air: thermister: 0.054k & fixed: 1k --> v_in = 
