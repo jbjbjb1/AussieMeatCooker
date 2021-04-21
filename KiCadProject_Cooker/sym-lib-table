@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name esp32)(type Legacy)(uri C:/Users/johnp/code/AussieMeatCooker/KiCadProject_Cooker/AddIn/ESP32-kiCAD-Footprints-master/ESP32-Footprints/ESP32-footprints-Shem-Lib.lib)(options "")(descr ""))
+  (lib (name audio_connector)(type Legacy)(uri C:/Users/johnp/code/AussieMeatCooker/KiCadProject_Cooker/AddIn/Connector/Connector.lib)(options "")(descr ""))
+)
