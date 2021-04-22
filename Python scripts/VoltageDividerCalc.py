@@ -11,7 +11,8 @@ t1 = 10
 t2 = 340
 r1 = 82.47
 r2 = 0.0313
-r_suggested = (r1*r2)**0.5
+#r_suggested = (r1*r2)**0.5
+r_suggested = 1
 v_s = 3.3
 steps = 4095
 
@@ -34,7 +35,7 @@ t_step = (t2 - t1) / steps
 print(f'Minimum change in temperature is {t_step:.2f} C.')
 t_mid = (t2 - t1) / 2
 print(f'Mid temperature point is {t_mid:.2f} C.')
-print(f'The min/max voltage reading in will be {t1}C = {v_o_r(v_s, r1, r_suggested):.3f} V & {t2} C = {v_o_r(v_s, r2, r_suggested):.3f} V when using resistance {r_suggested:.3f} kOhm.')
+print(f'The low/high voltage reading in will be {t1}C = {v_o_r(v_s, r1, r_suggested):.3f} V & {t2} C = {v_o_r(v_s, r2, r_suggested):.3f} V when using resistance {r_suggested:.3f} kOhm.')
 
 # Plot
 plot_range = np.linspace(1, 1, 1)

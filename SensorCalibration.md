@@ -1,6 +1,6 @@
 # ESP32 Calibration
-* Used ESP32 tool espefuse.py (https://github.com/espressif/esptool/wiki/espefuse) to get the calibration value for the ESP32 as documented here (https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html).
-* On windows, with esptools installed from pip, used `python -m espefuse --port COM6 adc_info`, the  resut was: "ADC VRef calibration: 1128mV".
+* Used ESP32 tool espefuse.py (https://github.com/espressif/esptool/wiki/espefuse) to get the calibration value for the ESP32 as documented here (https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html). On windows, with esptools installed from pip, used `python -m espefuse --port COM6 adc_info`, the  resut was: "ADC VRef calibration: 1128mV". Was not useful so far.
+* There are some issues with the default ESP32 ADC (https://github.com/espressif/esp-idf/issues/164). I was able to calibrate and use within the "useable range"; see folder /ESP32_calibration.
 
 # Sensor calibration
 ## Measurements
@@ -40,7 +40,8 @@ For the sensor I expect they will need to work in ranges:
 * Usually: 20 C - 80 C
 * Sometimes: -10 C - 110 C (248.1k - 2.62k)
 
-So, sqrt(248.1 * 2.62) = 25 kOhm (fixed resistor value).
+So, sqrt(248.1 * 2.62) = 25.5 kOhm
+So, try 25 kOhm fixed resistor value.
 
 ### BBQ air sensor
 (NOTE: Need to check this sensor has the same Steinhart-Hart model coefficients as the above)
@@ -49,11 +50,9 @@ For the sensor I expect they will need to work in ranges:
 * Usually: 100 - 320 C
 * Sometimes: 10 - 340 C (82.47k -  0.0313k)
 
-Calculating sqrt() =  kOhm
+Calculating sqrt(82.47 * 0.0313) = 1.6 kOhm
 So, try 1 kOhm fixed resistor value.
 
-# Voltage consideration
-* Input voltage is 3.3V
-* Range of possible output voltages are:
-    * Air: thermister: 17.42k & fixed: 1k --> v_in = 
-    * Air: thermister: 0.054k & fixed: 1k --> v_in = 
+# Improvements
+* Input voltage is 3.24V. Need to consider that the ESP32 can not work between 0-0.2V and 3.08-3.24V.
+* Consider a ADC chip for higher accuracy.
