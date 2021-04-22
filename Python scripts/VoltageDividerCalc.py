@@ -7,10 +7,11 @@ import numpy as np
 # * Convert to Class, use json to define inputs required
 
 # Inputs
-t1 = 50
-t2 = 300
-r1 = 17.42
-r2 = 0.054
+t1 = 10
+t2 = 340
+r1 = 82.47
+r2 = 0.0313
+r_suggested = (r1*r2)**0.5
 v_s = 3.3
 steps = 4095
 
@@ -18,17 +19,7 @@ A = 0.9482846445  * 10** -3
 B = 1.952744345 * 10** -4
 C = 2.570293116  * 10** -7
 
-plot_range = np.linspace(1, 1, 1)
 
-# Calculations
-t_step = (t2 - t1) / steps
-print(f'Minimum change in temperature is {t_step:.2f} C.')
-t_mid = (t2 - t1) / 2
-print(f'Mid temperature point is {t_mid:.2f} C.')
-# TODO
-print(f'The min/max voltage reading in will be {a} and {b} V.')
-
-# Plot
 def v_o_r(v_s, r_range, r):
     """ Calculates V_o = f(R), from resistance of thermister """
     return v_s * r / (r_range + r)
@@ -37,6 +28,16 @@ def t_o(r_range):
     """ Returns temperature in Kelvin from Steinhart-Hart model. """
     r_range = r_range * 1000    # convert from kOhm to Ohm
     return 1/(A + B*np.log(r_range) + C*(np.log(r_range))**3) - 273.15
+
+# Calculations
+t_step = (t2 - t1) / steps
+print(f'Minimum change in temperature is {t_step:.2f} C.')
+t_mid = (t2 - t1) / 2
+print(f'Mid temperature point is {t_mid:.2f} C.')
+print(f'The min/max voltage reading in will be {t1}C = {v_o_r(v_s, r1, r_suggested):.3f} V & {t2} C = {v_o_r(v_s, r2, r_suggested):.3f} V when using resistance {r_suggested:.3f} kOhm.')
+
+# Plot
+plot_range = np.linspace(1, 1, 1)
 
 fig, axs = plt.subplots(2, figsize=(8, 6))
 fig.subplots_adjust(

@@ -45,11 +45,11 @@ So, sqrt(248.1 * 2.62) = 25 kOhm (fixed resistor value).
 ### BBQ air sensor
 (NOTE: Need to check this sensor has the same Steinhart-Hart model coefficients as the above)
 For the sensor I expect they will need to work in ranges:
-* Most accurate: 150 to 250 C
-* Usually: 100 - 300 C
-* Sometimes: 50 - 300 C (17.42k -  0.054k)
+* Most accurate: 220 to 300 C
+* Usually: 100 - 320 C
+* Sometimes: 10 - 340 C (82.47k -  0.0313k)
 
-Calculating sqrt(17.42 * 0.054) = 0.97 kOhm
+Calculating sqrt() =  kOhm
 So, try 1 kOhm fixed resistor value.
 
 # Voltage consideration
