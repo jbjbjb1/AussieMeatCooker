@@ -7,6 +7,7 @@ The purpose of this project is to make a device to monitor bbq air and meat temp
 This project is currently functional and the temperature reading has an accuracy of +/-1 deg C. It uses bluetooth to communicate via bluetooth serial (e.g. android app: https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal&hl=en_AU&gl=US). This project initially started as an arduino based device (see branch "arduino") and springboarded off some great work done here: https://forum.arduino.cc/index.php?topic=231655.0, but since then it has moved to the ESP32 for a more compact design with inbuilt bluetooth functionality.
 
 ## Next steps
+* Implement multisampling for esp32 adc (see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#minimizing-noise)
 * Improve app interface
 * 3D print case
 
