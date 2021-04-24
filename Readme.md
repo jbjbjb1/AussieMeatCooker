@@ -4,7 +4,12 @@ The purpose of this project is to make a device to monitor bbq air and meat temp
 
 <img src="progress_pic.jpg" width="600">
 
-This project is currently functional and the temperature reading has an accuracy of +/-1 deg C. It uses bluetooth to communicate via bluetooth serial (e.g. android app: https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal&hl=en_AU&gl=US). This project initially started as an arduino based device (see branch "arduino") and spring boarded off some great work done here: https://forum.arduino.cc/index.php?topic=231655.0, but since then it has moved to the ESP32 for a more compact design with inbuilt bluetooth functionality.
+This project is currently functional and the temperature reading has an accuracy of +/-1 deg C. It uses bluetooth to communicate via bluetooth serial (e.g. android app: https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal&hl=en_AU&gl=US). This project initially started as an arduino based device and spring boarded off some great work done here: https://forum.arduino.cc/index.php?topic=231655.0, but since then it has moved to the ESP32 for a more compact design with inbuilt bluetooth functionality.
+
+## Branches
+* The "master" branch is the lastest functional ESP32 version of the meat cooker. 
+* The "dev" branch is the working branch for new ESP32 features.
+* The "arduino" branch is an archive of where this project got up to on the Arduino Uno.
 
 ## Next steps
 * Check voltage divider resistances allow adequate analogue to digital conversion. For example, ESP32 can only measure between 0.2-3.08V effectively (which for the air sensor is 55C - 380C). This is ok, check it is ok for the meat probe.
