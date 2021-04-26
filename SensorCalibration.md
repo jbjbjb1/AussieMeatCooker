@@ -54,5 +54,11 @@ Calculating sqrt(82.47 * 0.0313) = 1.6 kOhm
 So, try 1 kOhm fixed resistor value.
 
 # Improvements
+* Need air sensor to work from 0 C up to 340 C. Need that low temperature range.
 * Input voltage is 3.24V. Need to consider that the ESP32 can not work between 0-0.2V and 3.08-3.24V.
-* Consider a ADC chip for higher accuracy.
+* Need air sensor to be at better range (is dropping out at high temp).
+
+
+# Completed (newest ontop)
+* 2.60V is 206C on ESP32 (but on plot, 206C is 1.78V). -> Plot was not at high enough resolution.
+* Consider a ADC chip for higher accuracy. -> Not needed, ESP32 sufficient accuracy.

@@ -51,7 +51,7 @@ float adc_cal(int pin_no) {
   float b = 0;  // Volts (V)
   if (a<200){
     b = -2;
-  } else if (a>3100) {
+  } else if (a>3150) {
     b = -1;
   } else if (a<2700) {
     b = (0.8194542611 * pow(a,1) + 142.7653067728)/1000;
