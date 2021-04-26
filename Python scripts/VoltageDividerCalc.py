@@ -6,7 +6,23 @@ import numpy as np
 # Next steps:
 # * Convert to Class, use json to define inputs required
 
+""" Meat sensor """
 # Inputs
+t1 = -10
+t2 = 110
+r1 = 248.1
+r2 = 2.62
+#r_suggested = (r1*r2)**0.5
+r_suggested = 25
+v_s = 3.24
+steps = 4096
+
+A = 0.8975771660  * 10** -3
+B = 2.067767238 * 10** -4
+C = 1.742614938  * 10** -7
+
+# Air Sensor
+""" # Inputs
 t1 = 10
 t2 = 340
 r1 = 82.47
@@ -18,7 +34,7 @@ steps = 4096
 
 A = 0.9482846445  * 10** -3
 B = 1.952744345 * 10** -4
-C = 2.570293116  * 10** -7
+C = 2.570293116  * 10** -7 """
 
 
 def v_o_r(v_s, r_range, r):
@@ -38,7 +54,7 @@ print(f'Mid temperature point is {t_mid:.2f} C.')
 print(f'The low/high voltage reading in will be {t1}C = {v_o_r(v_s, r1, r_suggested):.3f} V & {t2} C = {v_o_r(v_s, r2, r_suggested):.3f} V when using resistance {r_suggested:.3f} kOhm.')
 
 # Plot
-plot_range = np.linspace(1, 1, 1)
+plot_range = np.linspace(r_suggested, r_suggested, 1)
 
 fig, axs = plt.subplots(2, figsize=(8, 6))
 fig.subplots_adjust(
@@ -50,7 +66,7 @@ fig.subplots_adjust(
     wspace=0.2
 )
 
-r_range = np.arange(r2, r1, 1)
+r_range = np.arange(r2, r1, 10)
 
 for x in plot_range:
     axs[0].plot(v_o_r(v_s, r_range, x), r_range, label=f'R_o {x} (kOhm)')

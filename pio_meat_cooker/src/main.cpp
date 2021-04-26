@@ -26,7 +26,7 @@ float air_ = 20;                // BBQ air temperature, for rate of change funct
 float meat_r;                   // Rate change meat temperature
 float air_r;                    // Rate change BBQ air temperature
 float update_r = 5000;          // Update rate for sensors, milliseconds
-float vin = 3.24;                // Reference voltage of ESP32 ADC
+float vin = 3.28;                // Reference voltage of ESP32 ADC
 
 // Meat probe
 float r_0 = 25000;                         // Resistance in ohms of your fixed resistor
@@ -40,50 +40,57 @@ float A_1 = 0.9482846445 * pow(10, -3);
 float B_1 = 1.952744345 * pow(10, -4);    
 float C_1 = 2.570293116 * pow(10, -7);    
 
-// Functions to get the probe temperatures when required.
-float T_meat(){
 
-  // Calculate temperature from raw input                                
-  float a0 = analogRead(35);
-  float v0 = (-0.0000495665*a0*a0 + 0.9590164706*a0 + 94.1840600468)/1000;       // Converts analogue value to voltage
-  float r0 = (((r_0 * vin) / v0) - r_0);                       // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
-  float logr0 = log(r0);                                       // Natural log of thermistor resistance used in Steinhart-Hart Equation
-  float logcubed0 = logr0 * logr0 * logr0;                     // The cube of the above value
-  float k0 = 1.0 / (A_0 + (B_0 * logr0) + (C_0 * logcubed0));  // Steinhart-Hart Equation to calculate temperature in Kelvin
-  float c0 = k0 - 273.15;                                      // Convert temperature K to C
-
-  Serial.print("a0=");  // Test code
-  Serial.print(a0);
-  Serial.print(", v0=");
-  Serial.println(v0);
-
-  if ((v0 < 0.2) || (v0 > 3.08) ){                              // If value outside range for esp32 to work well
-    meat = int(-1);
+// ADC to V with calibration
+float adc_cal(int pin_no) {
+  float a = 0;  // ADC value, average
+  for (int x = 0; x<64; x++) {
+    // Reading potentiometer value 64 times (~3ms), taking average
+    a += analogRead(pin_no)/64;
+    }
+  float b = 0;  // Volts (V)
+  if (a<200){
+    b = -2;
+  } else if (a>3100) {
+    b = -1;
+  } else if (a<2700) {
+    b = (0.8194542611 * pow(a,1) + 142.7653067728)/1000;
+  } else if (a>=2700) {
+    b = (-0.0001385263 * pow(a,2) + 1.4919918635 * pow(a,1) - 630.5586748105)/1000;
   }
-  else{ 
-    meat = c0;                                                    // Otherwise use the calculated value
-  }
-  return meat;
+  return b;
 }
 
-float T_air(){
 
+// Functions to get the probe temperatures when required.
+float T_meat(){
+  // Calculate temperature from raw input                                
+  float v0 = adc_cal(35);                                        // Converts analogue value to voltage
+  if ((v0 != -1) || (v0 != -2)) {
+    float r0 = (((r_0 * vin) / v0) - r_0);                       // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
+    float logr0 = log(r0);                                       // Natural log of thermistor resistance used in Steinhart-Hart Equation
+    float logcubed0 = logr0 * logr0 * logr0;                     // The cube of the above value
+    float k0 = 1.0 / (A_0 + (B_0 * logr0) + (C_0 * logcubed0));  // Steinhart-Hart Equation to calculate temperature in Kelvin
+    float c0 = k0 - 273.15;                                      // Convert temperature K to C
+    return c0;
+  } else {
+    return v0;
+  }
+}
+
+float T_air() {
   // Read air aligator clip
-  float a1 = analogRead(34);                                                // Same code as above. Repeat for as many sensors as you need to connect.
-  float v1 = (-0.0000495665*a1*a1 + 0.9590164706*a1 + 94.1840600468)/1000;  // Formula from ESP32 calibration
-  float r1 = (((r_1 * vin) / v1) - r_1);
-  float logr1 = log(r1);
-  float logcubed1 = logr1 * logr1 * logr1;
-  float k1 = 1.0 / (A_1 + (B_1 * logr1) + (C_1 * logcubed1));
-  float c1 = k1 - 273.15;  
-
-  if ((v1 < 0.2) || (v1 > 3.08) ){                              // If value outside range for esp32 to work well
-    air = int(-1);
+  float v1 = adc_cal(34);                                      // Converts analogue value to voltage
+  if ((v1 != -1) || (v1 != -2)) {
+    float r1 = (((r_1 * vin) / v1) - r_1);
+    float logr1 = log(r1);
+    float logcubed1 = logr1 * logr1 * logr1;
+    float k1 = 1.0 / (A_1 + (B_1 * logr1) + (C_1 * logcubed1));
+    float c1 = k1 - 273.15;
+    return c1; 
+  } else {
+    return v1;
   }
-  else{
-    air = c1;
-  }
-  return air;
 }
 
 
