@@ -12,7 +12,8 @@ This project is currently functional and the temperature reading has an accuracy
 * The "arduino" branch is an archive of where this project got up to on the Arduino Uno.
 
 ## Next steps
-* Implement multisampling for esp32 adc (see example code here: https://github.com/espressif/esp-idf/blob/aaf12390eb14b95589acd98db5c268a2e56bb67e/examples/peripherals/adc/main/adc1_example_main.c#L72-L84 and explanation here: https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#minimizing-noise)
+* Get display working on ESP32 to show temperatures
+* Refactor code
 * Improve app interface
 * 3D print case
 * Improve reading range so air sensor can work down to 0 C (limited by ESP32 only being able to measure ADC from ~0.2V). 
@@ -35,6 +36,8 @@ This project is currently functional and the temperature reading has an accuracy
 * Start cooking!
 
 ## Steps completed (newest on top)
+* Fixed issue with sensors not reading correct temperature range
+* Implement multisampling for esp32 adc (see example code here: https://github.com/espressif/esp-idf/blob/aaf12390eb14b95589acd98db5c268a2e56bb67e/examples/peripherals/adc/main/adc1_example_main.c#L72-L84 and explanation here: https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#minimizing-noise)
 * Check voltage divider resistances allow adequate analogue to digital conversion. For example, ESP32 can only measure between 0.2-3.08V effectively (which for the air sensor is 55C - 380C and meat sensor is <-10 C - >110 C). 
 * Setup ESP32 ADC converter (details: https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html)
 * Put on ESP32 board with bluetooth (similar to https://github.com/dereulenspiegel/ibbq-gateway)

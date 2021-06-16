@@ -22,27 +22,34 @@ float meat;                     // Meat temperature
 float air;                      // BBQ air temperature
 float meat_ = 20;               // Meat temperature, for rate of change function
 float air_ = 20;                // BBQ air temperature, for rate of change function
-float meat_r;                   // Rate change meat temperature
-float air_r;                    // Rate change BBQ air temperature
+int pin_air = 34;               // ESP32 pin number for input
+int pin_meat = 35;
 float update_r = 5000;          // Update rate for sensors, milliseconds
+int update_rr = 2;              // Factor slower to update temperature change rate
 float vin = 3.28;                // Reference voltage of ESP32 ADC
 
 // Meat probe
-float r_0 = 25000;                         // Resistance in ohms of your fixed resistor
-float A_0 = 0.8975771660 * pow(10, -3);    // "A" Coeffecient in Steinhart-Hart Equation
-float B_0 = 2.067767238 * pow(10, -4);     // "B"
-float C_0 = 1.742614938 * pow(10, -7);     // "C"
+float R_m = 25000;                         // Resistance in ohms of your fixed resistor
+float A_m = 0.8975771660 * pow(10, -3);    // "A" Coeffecient in Steinhart-Hart Equation
+float B_m = 2.067767238 * pow(10, -4);     // "B"
+float C_m = 1.742614938 * pow(10, -7);     // "C"
 
 // Air aligator clip
-float r_1 = 1000;                        
-float A_1 = 0.9482846445 * pow(10, -3);    
-float B_1 = 1.952744345 * pow(10, -4);    
-float C_1 = 2.570293116 * pow(10, -7);    
+float R_a = 1000;                        
+float A_a = 0.9482846445 * pow(10, -3);    
+float B_a = 1.952744345 * pow(10, -4);    
+float C_a = 2.570293116 * pow(10, -7);    
+
+// Value initialisation
+float meat_r;                   // Rate change function initialisation
+float air_r;                    
+unsigned long time_m_ = 0;
+unsigned long time_a_ = 0;
 
 
-// ADC 64 readings
+// ADC average of 64 readings
 float adc_64(int pin_no) {
-  float a = 0;  // ADC value, average
+  float a = 0;  // Add ADC values to this variable
   for (int x = 0; x<64; x++) {
     // Reading potentiometer value 64 times (~3ms), taking average
     a += analogRead(pin_no)/64;
@@ -50,7 +57,7 @@ float adc_64(int pin_no) {
   return a;
 }
 
-// ADC to V with calibration
+// ADC to V with calibration, it takes into account the limits of the ESP32 ADC converter
 float adc_cal(float a) {
   float b = 0;  // Volts (V)
   if (a<18){
@@ -67,90 +74,80 @@ float adc_cal(float a) {
 
 
 // Functions to get the probe temperatures when required.
-float T_meat(){
+float Temp(int pin_no, float R, float A, float B, float C){
   // Calculate temperature from raw input                                
-  float v0_raw = adc_64(35);
+  float v0_raw = adc_64(pin_no);
   float v0 = adc_cal(v0_raw);                                        // Converts analogue value to voltage
-  SerialBT.print("[Meat ");
-  SerialBT.print(v0_raw, 1);
-  SerialBT.print(" raw, ");
-  SerialBT.print(v0, 2);
-  SerialBT.print(" V] ");
-  if ((v0 != -1) || (v0 != -2)) {
-    float r0 = (((r_0 * vin) / v0) - r_0);                       // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
+  //SerialBT.print("[Debug ");
+  //SerialBT.print(v0_raw, 1);
+  //SerialBT.print(" raw, ");
+  //SerialBT.print(v0, 2);
+  //SerialBT.print(" V] ");
+  if (v0 == -1) {
+    return -1;
+  } else if (v0 == -2) {
+    return -2;
+  } else if ((v0 != -1) || (v0 != -2)) {
+    float r0 = (((R * vin) / v0) - R);                       // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
     float logr0 = log(r0);                                       // Natural log of thermistor resistance used in Steinhart-Hart Equation
     float logcubed0 = logr0 * logr0 * logr0;                     // The cube of the above value
-    float k0 = 1.0 / (A_0 + (B_0 * logr0) + (C_0 * logcubed0));  // Steinhart-Hart Equation to calculate temperature in Kelvin
+    float k0 = 1.0 / (A + (B * logr0) + (C * logcubed0));  // Steinhart-Hart Equation to calculate temperature in Kelvin
     float c0 = k0 - 273.15;                                      // Convert temperature K to C
     return c0;
   } else {
-    return -1;
+    return -3;
   }
 }
 
-float T_air() {
-  // Read air aligator clip
-  float v1_raw = adc_64(34); 
-  float v1 = adc_cal(v1_raw);                                      // Converts analogue value to voltage
-  SerialBT.print("[Air ");
-  SerialBT.print(v1_raw, 1);
-  SerialBT.print(" raw, ");
-  SerialBT.print(v1, 2);
-  SerialBT.print(" V] ");
-  if ((v1 != -1) || (v1 != -2)) {
-    float r1 = (((r_1 * vin) / v1) - r_1);
-    float logr1 = log(r1);
-    float logcubed1 = logr1 * logr1 * logr1;
-    float k1 = 1.0 / (A_1 + (B_1 * logr1) + (C_1 * logcubed1));
-    float c1 = k1 - 273.15;
-    return c1; 
+
+// Print temp with errors
+bool printTemp(float temp) {
+  if (temp == -2) {
+    SerialBT.print("LOW");
+  } else if (temp == -1) {
+    SerialBT.print("HIGH");
+  } else if (temp == -3) {
+    SerialBT.print("ERR");
   } else {
-    return -1;
+    SerialBT.print(temp, 1);
   }
+  return true;
 }
 
 
 // Part Update temperatures for dsiplay
 bool updateTemp(void *){
-  meat = T_meat();
-  SerialBT.print("Meat : ");
-  SerialBT.print(meat, 1);
-  SerialBT.println("C.");
-  
-  air = T_air();
   SerialBT.print("Air : ");
-  SerialBT.print(air, 1);
-  SerialBT.println("C.");
+  printTemp(Temp(pin_air, R_a, A_a, B_a, C_a));
+  SerialBT.print(" C, ");
+  
+  SerialBT.print("Meat : ");
+  printTemp(Temp(pin_meat, R_m, A_m, B_m, C_m));
+  SerialBT.println(" C."); 
   return true;
 }
 
+
 // Part Update rate of temperature change
 bool updateTempRate(void *){
-  float meat_n = T_meat();          // Get temperature now
-  float air_n = T_air();
-  
-  meat_r = (meat_n - meat_) * 10;     // for 10, can't get ((1000.0*60.0)/(update_r*2.0)) working
-  air_r = (air_n - air_) * 10;
+  unsigned long time_m = millis();
+  float meat_n = Temp(pin_meat, R_m, A_m, B_m, C_m);          // Get temperature now
+  unsigned long time_a = millis();
+  float air_n = Temp(pin_air, R_a, A_a, B_a, C_a);
+
+  float meat_r = (meat_n - meat_) * 60 / ((time_m - time_m_) / 1000);                   // Rate of change meat, using clock for time
+  float air_r = (air_n - air_) * 60 / ((time_a - time_a_) / 1000);                      // Rate of change air, using clock for time
   meat_ = meat_n;
   air_ = air_n;
+  time_m_ = time_m;
+  time_a_ = time_a;
 
-  /*
-  // Serial
-  Serial.print("Air @ ");
-  Serial.print(air_r, 2);
-  Serial.print(" C/min, ");
-  Serial.print("Prb1 @ ");
-  Serial.print(meat_r, 2);
-  Serial.println(" C/min");
-
-  // Bluetooth serial
   SerialBT.print("Air @ ");
-  SerialBT.print(air_r, 2);
+  SerialBT.print(air_r, 1);
   SerialBT.print(" C/min, ");
-  SerialBT.print("Prb1 @ ");
-  SerialBT.print(meat_r, 2);
-  SerialBT.println(" C/min");
-  */
+  SerialBT.print("Meat @ ");
+  SerialBT.print(meat_r, 1);
+  SerialBT.println(" C/min.");
 
   return true;
 }
@@ -163,7 +160,7 @@ void setup()
   delay(200);                           // Time delay so serial prints properly
   Serial.println("The device started, now you can pair it with bluetooth!");
   t.every(update_r, updateTemp);
-  // t.every(update_r*2, updateTempRate);
+  t.every(update_r*update_rr, updateTempRate);
 }                      
 
 // The main loop just ticks over the timer:
