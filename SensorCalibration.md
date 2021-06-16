@@ -1,6 +1,7 @@
 # ESP32 Calibration
 * Used ESP32 tool espefuse.py (https://github.com/espressif/esptool/wiki/espefuse) to get the calibration value for the ESP32 as documented here (https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html). On windows, with esptools installed from pip, used `python -m espefuse --port COM6 adc_info`, the  resut was: "ADC VRef calibration: 1128mV". Was not useful so far.
 * There are some issues with the default ESP32 ADC (https://github.com/espressif/esp-idf/issues/164). I was able to calibrate and use within the "useable range"; see folder /ESP32_calibration.
+* The A2D of the ESP32 is 12 bit (4096 different numbers). From testing done it is accurate between inputs of 18 (0.15V) - 4076 (3.15V) (with default settings).
 
 # Sensor calibration
 ## Measurements
@@ -55,8 +56,7 @@ So, try 1 kOhm fixed resistor value.
 
 # Improvements
 * Need air sensor to work from 0 C up to 340 C. Need that low temperature range.
-* Input voltage is 3.24V. Need to consider that the ESP32 can not work between 0-0.2V and 3.08-3.24V.
-* Need air sensor to be at better range (is dropping out at high temp).
+* Use a external A2D converter if want higher accuracy.
 
 
 # Completed (newest ontop)

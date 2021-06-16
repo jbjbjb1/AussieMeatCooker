@@ -1,8 +1,7 @@
 //Title: Meat Cooker - Digital BBQ Thermometer
 
-// Part 1: This initializes the LCD using the I2C converter and the global variables that we will need:
-
 #include <Arduino.h>
+
 #include <BluetoothSerial.h>
 #include <driver/adc.h>
 #include <SPI.h>
@@ -41,17 +40,22 @@ float B_1 = 1.952744345 * pow(10, -4);
 float C_1 = 2.570293116 * pow(10, -7);    
 
 
-// ADC to V with calibration
-float adc_cal(int pin_no) {
+// ADC 64 readings
+float adc_64(int pin_no) {
   float a = 0;  // ADC value, average
   for (int x = 0; x<64; x++) {
     // Reading potentiometer value 64 times (~3ms), taking average
     a += analogRead(pin_no)/64;
     }
+  return a;
+}
+
+// ADC to V with calibration
+float adc_cal(float a) {
   float b = 0;  // Volts (V)
-  if (a<200){
+  if (a<18){
     b = -2;
-  } else if (a>3150) {
+  } else if (a>4076) {
     b = -1;
   } else if (a<2700) {
     b = (0.8194542611 * pow(a,1) + 142.7653067728)/1000;
@@ -65,7 +69,13 @@ float adc_cal(int pin_no) {
 // Functions to get the probe temperatures when required.
 float T_meat(){
   // Calculate temperature from raw input                                
-  float v0 = adc_cal(35);                                        // Converts analogue value to voltage
+  float v0_raw = adc_64(35);
+  float v0 = adc_cal(v0_raw);                                        // Converts analogue value to voltage
+  SerialBT.print("[Meat ");
+  SerialBT.print(v0_raw, 1);
+  SerialBT.print(" raw, ");
+  SerialBT.print(v0, 2);
+  SerialBT.print(" V] ");
   if ((v0 != -1) || (v0 != -2)) {
     float r0 = (((r_0 * vin) / v0) - r_0);                       // Calculates resistance value of thermistor based on fixed resistor value and measured voltage
     float logr0 = log(r0);                                       // Natural log of thermistor resistance used in Steinhart-Hart Equation
@@ -74,13 +84,19 @@ float T_meat(){
     float c0 = k0 - 273.15;                                      // Convert temperature K to C
     return c0;
   } else {
-    return v0;
+    return -1;
   }
 }
 
 float T_air() {
   // Read air aligator clip
-  float v1 = adc_cal(34);                                      // Converts analogue value to voltage
+  float v1_raw = adc_64(34); 
+  float v1 = adc_cal(v1_raw);                                      // Converts analogue value to voltage
+  SerialBT.print("[Air ");
+  SerialBT.print(v1_raw, 1);
+  SerialBT.print(" raw, ");
+  SerialBT.print(v1, 2);
+  SerialBT.print(" V] ");
   if ((v1 != -1) || (v1 != -2)) {
     float r1 = (((r_1 * vin) / v1) - r_1);
     float logr1 = log(r1);
@@ -89,7 +105,7 @@ float T_air() {
     float c1 = k1 - 273.15;
     return c1; 
   } else {
-    return v1;
+    return -1;
   }
 }
 
@@ -97,7 +113,14 @@ float T_air() {
 // Part Update temperatures for dsiplay
 bool updateTemp(void *){
   meat = T_meat();
+  SerialBT.print("Meat : ");
+  SerialBT.print(meat, 1);
+  SerialBT.println("C.");
+  
   air = T_air();
+  SerialBT.print("Air : ");
+  SerialBT.print(air, 1);
+  SerialBT.println("C.");
   return true;
 }
 
@@ -132,30 +155,6 @@ bool updateTempRate(void *){
   return true;
 }
 
-// Update the serial & bluetooth serial output:
-
-bool updateSerial(void *){
-  /*
-  // Serial
-  Serial.print("Air : ");
-  Serial.print(air, 1);
-  Serial.print(" C, ");
-  Serial.print("Prb1: ");
-  Serial.print(meat, 1);
-  Serial.println(" C");
-  */
-
-  // Bluetooth serial
-  SerialBT.print("Air : ");
-  SerialBT.print(air, 1);
-  SerialBT.print(" C, ");
-  SerialBT.print("Prb1: ");
-  SerialBT.print(meat, 1);
-  SerialBT.println(" C");
-
-  return true;
-}
-
 // The "Setup" function begins serial communication and setups update rates of timers:
 void setup()
 {
@@ -164,8 +163,7 @@ void setup()
   delay(200);                           // Time delay so serial prints properly
   Serial.println("The device started, now you can pair it with bluetooth!");
   t.every(update_r, updateTemp);
-  t.every(update_r*2, updateTempRate);
-  t.every(update_r, updateSerial);  
+  // t.every(update_r*2, updateTempRate);
 }                      
 
 // The main loop just ticks over the timer:
