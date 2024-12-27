@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meat Cooker</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .temperature { font-size: 48px; margin: 20px; }
+        .label { font-size: 24px; }
+    </style>
+</head>
+<body>
+    <div class="temperature">
+        <div class="label">Meat</div>
+        <div id="meat">--</div>
+    </div>
+    <div class="temperature">
+        <div class="label">Air</div>
+        <div id="air">--</div>
+    </div>
+    <script>
+        setInterval(() => {
+            fetch('/temperature')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('meat').innerText = data.meat;
+                    document.getElementById('air').innerText = data.air;
+                });
+        }, 1000);
+    </script>
+</body>
+</html>
