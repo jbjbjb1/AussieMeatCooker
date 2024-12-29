@@ -10,13 +10,27 @@
             padding: 0;
             background-color: #f9f9f9;
         }
+        h1 {
+            font-size: 64px;
+            margin-top: 20px;
+            color: #333;
+        }
         .temperature {
-            font-size: 48px;
             margin: 20px;
         }
         .label {
-            font-size: 24px;
+            font-size: 36px;
             color: #555;
+            margin-bottom: 10px;
+        }
+        .temperature-value {
+            font-size: 72px;
+            font-weight: bold;
+            color: #000;
+        }
+        .rate {
+            font-size: 24px;
+            color: #888;
         }
         .error {
             color: red;
@@ -29,22 +43,22 @@
     <div class="temperature">
         <div class="label">Air</div>
         <div id="air" class="temperature-value">--</div>
-        <div id="airRate">Rate: --</div>
+        <div id="airRate" class="rate">Rate: --</div>
     </div>
     <div class="temperature">
         <div class="label">Meat</div>
         <div id="meat" class="temperature-value">--</div>
-        <div id="meatRate">Rate: --</div>
+        <div id="meatRate" class="rate">Rate: --</div>
     </div>    
     <script>
         function updateTemperatures() {
             fetch('/temperature')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('air').innerText = `${data.air.toFixed(1)} °C`;
-                    document.getElementById('meat').innerText = `${data.meat.toFixed(1)} °C`;
-                    document.getElementById('airRate').innerText = `Rate: ${data.air_r.toFixed(2)} °C/min`;
-                    document.getElementById('meatRate').innerText = `Rate: ${data.meat_r.toFixed(2)} °C/min`;
+                    document.getElementById('air').innerHTML = `${data.air.toFixed(0)} &deg;C`;
+                    document.getElementById('meat').innerHTML = `${data.meat.toFixed(0)} &deg;C`;
+                    document.getElementById('airRate').innerHTML = `Rate: ${data.air_r.toFixed(0)} &deg;C/min`;
+                    document.getElementById('meatRate').innerHTML = `Rate: ${data.meat_r.toFixed(0)} &deg;C/min`;
                     
                     // Remove error styling if present
                     document.getElementById('air').classList.remove('error');

@@ -45,3 +45,8 @@ This project is currently functional and the temperature reading has an accuracy
 * Sensors arrived, did calibration and calculated Steinhart-Hart model coefficients
 * Arduino screen working (I2C to the 1602 LCD) and showing temperatures
 * Got code working, used potentiometer to simulate different temperatures (as resistances)
+
+## Backend steps
+* cmd -> monitor to see what port
+* pio: upload system image
+* pio: upload and monitor
