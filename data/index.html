@@ -3,29 +3,62 @@
 <head>
     <title>Meat Cooker</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .temperature { font-size: 48px; margin: 20px; }
-        .label { font-size: 24px; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .temperature {
+            font-size: 48px;
+            margin: 20px;
+        }
+        .label {
+            font-size: 24px;
+            color: #555;
+        }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
-    <div class="temperature">
-        <div class="label">Meat</div>
-        <div id="meat">--</div>
-    </div>
+    <h1>BBQ Thermometer</h1>
     <div class="temperature">
         <div class="label">Air</div>
         <div id="air">--</div>
+        <div id="airRate">Rate: --</div>
     </div>
+    <div class="temperature">
+        <div class="label">Meat</div>
+        <div id="meat">--</div>
+        <div id="meatRate">Rate: --</div>
+    </div>    
     <script>
-        setInterval(() => {
+        function updateTemperatures() {
             fetch('/temperature')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('meat').innerText = data.meat;
-                    document.getElementById('air').innerText = data.air;
+                    document.getElementById('air').innerText = `${data.air.toFixed(1)} °C`;
+                    document.getElementById('meat').innerText = `${data.meat.toFixed(1)} °C`;
+                    document.getElementById('airRate').innerText = `Rate: ${data.air_r.toFixed(2)} °C/min`;
+                    document.getElementById('meatRate').innerText = `Rate: ${data.meat_r.toFixed(2)} °C/min`;
+                })
+                .catch(error => {
+                    console.error('Error fetching temperature data:', error);
+                    document.getElementById('meat').innerText = 'Error';
+                    document.getElementById('air').innerText = 'Error';
+                    document.getElementById('airRate').innerText = 'Rate: Error';
+                    document.getElementById('meatRate').innerText = 'Rate: Error';
                 });
-        }, 1000);
+
+        }
+
+        setInterval(updateTemperatures, 5000); // Update every 5 seconds
+
+        // Initial load
+        updateTemperatures();
     </script>
 </body>
 </html>

@@ -9,8 +9,6 @@ float meat_ = 20;               // Meat temperature, for rate of change function
 float air_ = 20;                // BBQ air temperature, for rate of change function
 int pin_air = 34;               // ESP32 pin number for input
 int pin_meat = 35;
-float update_r = 5000;          // Update rate for sensors, milliseconds
-int update_rr = 2;              // Factor slower to update temperature change rate
 float vin = 3.28;                // Reference voltage of ESP32 ADC
 
 // Meat probe
@@ -90,33 +88,35 @@ float Temp(int pin_no, float R, float A, float B, float C){
 bool printTemp(float temp) {
   // Print temp with errors
   if (temp == -2) {
-    SerialBT.print("LOW");
+    Serial.print("LOW");
   } else if (temp == -1) {
-    SerialBT.print("HIGH");
+    Serial.print("HIGH");
   } else if (temp == -3) {
-    SerialBT.print("ERR");
+    Serial.print("ERR");
   } else {
-    SerialBT.print(temp, 1);
+    Serial.print(temp, 1);
   }
   return true;
 }
 
 
-bool updateTemp(void *){
-  // Part Update temperatures for dsiplay
-  SerialBT.print("Air : ");
-  printTemp(Temp(pin_air, R_a, A_a, B_a, C_a));
-  SerialBT.print(" C, ");
-  
-  SerialBT.print("Meat : ");
-  printTemp(Temp(pin_meat, R_m, A_m, B_m, C_m));
-  SerialBT.println(" C."); 
+bool updateTemp(void *) {
+  // Updates temperature readings   
+  meat = Temp(pin_meat, R_m, A_m, B_m, C_m);
+  air = Temp(pin_air, R_a, A_a, B_a, C_a);
+
+  Serial.print("Air : ");
+  Serial.print(air, 1);
+  Serial.print(" C, Meat : ");
+  Serial.print(meat, 1);
+  Serial.println(" C.");
+
   return true;
 }
 
 
 bool updateTempRate(void *){
-  // Part Update rate of temperature change
+  // Updates rate of change of temperature
   unsigned long time_m = millis();
   float meat_n = Temp(pin_meat, R_m, A_m, B_m, C_m);                            // Get temperature now
   unsigned long time_a = millis();
@@ -129,12 +129,12 @@ bool updateTempRate(void *){
   time_m_ = time_m;
   time_a_ = time_a;
 
-  SerialBT.print("Air @ ");
-  SerialBT.print(air_r, 1);
-  SerialBT.print(" C/min, ");
-  SerialBT.print("Meat @ ");
-  SerialBT.print(meat_r, 1);
-  SerialBT.println(" C/min.");
+  Serial.print("Air @ ");
+  Serial.print(air_r, 1);
+  Serial.print(" C/min, ");
+  Serial.print("Meat @ ");
+  Serial.print(meat_r, 1);
+  Serial.println(" C/min.");
 
   return true;
 }

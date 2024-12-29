@@ -11,8 +11,6 @@ extern float meat_;
 extern float air_;
 extern int pin_air;
 extern int pin_meat;
-extern float update_r;
-extern int update_rr;
 extern float R_m;
 extern float A_m;
 extern float B_m;
