@@ -21,6 +21,13 @@ AsyncWebServer server(80);
 void setup() {
     Serial.begin(115200);
 
+    // Setup SPIFFS which hosts the index.html website
+    if (!SPIFFS.begin(true)) {
+    Serial.println("An error occurred while mounting SPIFFS");
+    return;
+    }
+
+
     // Connect to Wi-Fi
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -33,6 +40,7 @@ void setup() {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/index.html", "text/html");
     });
+    Serial.println("Server started, listening for connections...");
 
     // Serve temperature data
     server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){

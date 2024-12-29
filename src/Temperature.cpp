@@ -115,26 +115,39 @@ bool updateTemp(void *) {
 }
 
 
-bool updateTempRate(void *){
-  // Updates rate of change of temperature
-  unsigned long time_m = millis();
-  float meat_n = Temp(pin_meat, R_m, A_m, B_m, C_m);                            // Get temperature now
-  unsigned long time_a = millis();
-  float air_n = Temp(pin_air, R_a, A_a, B_a, C_a);
+bool updateTempRate(void *) {
+    // Updates rate of change of temperature
+    unsigned long currentTime = millis();
+    
+    // Get current temperatures
+    float meatCurrent = Temp(pin_meat, R_m, A_m, B_m, C_m);
+    float airCurrent = Temp(pin_air, R_a, A_a, B_a, C_a);
 
-  float meat_r = (meat_n - meat_) * 60 / ((time_m - time_m_) / 1000);           // Rate of change meat, using clock for time
-  float air_r = (air_n - air_) * 60 / ((time_a - time_a_) / 1000);              // Rate of change air, using clock for time
-  meat_ = meat_n;
-  air_ = air_n;
-  time_m_ = time_m;
-  time_a_ = time_a;
+    // Calculate elapsed time in seconds
+    float elapsedSeconds = (currentTime - time_m_) / 1000.0;
 
-  Serial.print("Air @ ");
-  Serial.print(air_r, 1);
-  Serial.print(" C/min, ");
-  Serial.print("Meat @ ");
-  Serial.print(meat_r, 1);
-  Serial.println(" C/min.");
+    // Avoid division by zero
+    if (elapsedSeconds > 0) {
+        // Calculate rate of change in °C/min
+        meat_r = (meatCurrent - meat_) * 60 / elapsedSeconds;
+        air_r = (airCurrent - air_) * 60 / elapsedSeconds;
+    } else {
+        meat_r = 0.0;
+        air_r = 0.0;
+    }
 
-  return true;
+    // Update previous values for next iteration
+    meat_ = meatCurrent;
+    air_ = airCurrent;
+    time_m_ = currentTime;
+
+    // Debug output
+    Serial.print("Air @ ");
+    Serial.print(air_r, 1);
+    Serial.print(" C/min, ");
+    Serial.print("Meat @ ");
+    Serial.print(meat_r, 1);
+    Serial.println(" C/min.");
+
+    return true;
 }

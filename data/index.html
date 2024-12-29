@@ -20,6 +20,7 @@
         }
         .error {
             color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -27,12 +28,12 @@
     <h1>BBQ Thermometer</h1>
     <div class="temperature">
         <div class="label">Air</div>
-        <div id="air">--</div>
+        <div id="air" class="temperature-value">--</div>
         <div id="airRate">Rate: --</div>
     </div>
     <div class="temperature">
         <div class="label">Meat</div>
-        <div id="meat">--</div>
+        <div id="meat" class="temperature-value">--</div>
         <div id="meatRate">Rate: --</div>
     </div>    
     <script>
@@ -44,6 +45,10 @@
                     document.getElementById('meat').innerText = `${data.meat.toFixed(1)} °C`;
                     document.getElementById('airRate').innerText = `Rate: ${data.air_r.toFixed(2)} °C/min`;
                     document.getElementById('meatRate').innerText = `Rate: ${data.meat_r.toFixed(2)} °C/min`;
+                    
+                    // Remove error styling if present
+                    document.getElementById('air').classList.remove('error');
+                    document.getElementById('meat').classList.remove('error');
                 })
                 .catch(error => {
                     console.error('Error fetching temperature data:', error);
@@ -51,6 +56,10 @@
                     document.getElementById('air').innerText = 'Error';
                     document.getElementById('airRate').innerText = 'Rate: Error';
                     document.getElementById('meatRate').innerText = 'Rate: Error';
+
+                    // Add error styling
+                    document.getElementById('air').classList.add('error');
+                    document.getElementById('meat').classList.add('error');
                 });
 
         }
