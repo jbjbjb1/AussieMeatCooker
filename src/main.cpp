@@ -21,28 +21,29 @@ AsyncWebServer server(80);
 void setup() {
     Serial.begin(115200);
 
+    // Initialize Wi-Fi as Access Point
+    WiFi.softAP(ssid, password); // Start the access point
+    Serial.println("Access Point Started");
+    Serial.print("SSID: ");
+    Serial.println(ssid);
+
+    // Print the IP address of the ESP32 AP
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.softAPIP());
+
     // Setup SPIFFS which hosts the index.html website
     if (!SPIFFS.begin(true)) {
     Serial.println("An error occurred while mounting SPIFFS");
     return;
     }
 
-
-    // Connect to Wi-Fi
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
-    }
-    Serial.println("Connected to WiFi");
-
-    // Serve the HTML page
+    // Start the web server
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/index.html", "text/html");
     });
     Serial.println("Server started, listening for connections...");
 
-    // Serve temperature data
+    
     server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
     String json = "{\"meat\":" + String(meat) + 
                   ", \"air\":" + String(air) + 
