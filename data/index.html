@@ -12,8 +12,21 @@
         }
         h1 {
             font-size: 64px;
-            margin-top: 20px;
+            margin-top: 60px; /* Adjust margin to avoid overlap */
             color: #333;
+        }
+        .offline-banner {
+            display: none;
+            background-color: red;
+            color: white;
+            font-size: 20px;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 1000; /* Ensure it stays on top */
         }
         .temperature {
             margin: 20px;
@@ -36,9 +49,32 @@
             color: red;
             font-weight: bold;
         }
+        /* Table styling */
+        table {
+            margin: 40px auto;
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 600px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #eee;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 30px 0 10px 0;
+        }
     </style>
 </head>
 <body>
+    <div id="offlineBanner" class="offline-banner">Offline</div>
     <h1>BBQ Thermometer</h1>
     <div class="temperature">
         <div class="label">Air</div>
@@ -50,7 +86,27 @@
         <div id="meat" class="temperature-value">--</div>
         <div id="meatRate" class="rate">Rate: --</div>
     </div>    
+    
+    <!-- New: Snapshot Button -->
+    <button id="snapshotBtn">Snapshot</button>
+    
+    <!-- New: Snapshot Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Meat</th>
+                <th>Air</th>
+                <th>Delta Mins</th>
+            </tr>
+        </thead>
+        <tbody id="snapshotTableBody">
+        </tbody>
+    </table>
+
     <script>
+        let lastUpdateTime = Date.now();
+
         function updateTemperatures() {
             fetch('/temperature')
                 .then(response => response.json())
@@ -59,10 +115,12 @@
                     document.getElementById('meat').innerHTML = `${data.meat.toFixed(0)} &deg;C`;
                     document.getElementById('airRate').innerHTML = `Rate: ${data.air_r.toFixed(0)} &deg;C/min`;
                     document.getElementById('meatRate').innerHTML = `Rate: ${data.meat_r.toFixed(0)} &deg;C/min`;
-                    
-                    // Remove error styling if present
-                    document.getElementById('air').classList.remove('error');
-                    document.getElementById('meat').classList.remove('error');
+
+                    // Update last update time
+                    lastUpdateTime = Date.now();
+
+                    // Hide offline banner if data is received
+                    document.getElementById('offlineBanner').style.display = 'none';
                 })
                 .catch(error => {
                     console.error('Error fetching temperature data:', error);
@@ -70,18 +128,53 @@
                     document.getElementById('air').innerText = 'Error';
                     document.getElementById('airRate').innerText = 'Rate: Error';
                     document.getElementById('meatRate').innerText = 'Rate: Error';
-
-                    // Add error styling
-                    document.getElementById('air').classList.add('error');
-                    document.getElementById('meat').classList.add('error');
                 });
-
         }
 
+        function checkOfflineStatus() {
+            if (Date.now() - lastUpdateTime > 10000) {
+                document.getElementById('offlineBanner').style.display = 'block';
+            }
+        }
+
+        // Update intervals
         setInterval(updateTemperatures, 5000); // Update every 5 seconds
+        setInterval(checkOfflineStatus, 1000); // Check offline status every second
 
         // Initial load
         updateTemperatures();
+
+        // --- New Code for Snapshots ---
+        let lastSnapshotTime = null;
+        const snapshotButton = document.getElementById('snapshotBtn');
+        const snapshotTableBody = document.getElementById('snapshotTableBody');
+
+        snapshotButton.addEventListener('click', () => {
+            const now = new Date();
+            const currentTime = now.toLocaleTimeString(); // e.g. "10:45:02 AM"
+
+            // Get the current displayed Meat and Air temperature
+            const meatVal = document.getElementById('meat').innerText;
+            const airVal = document.getElementById('air').innerText;
+
+            // Calculate delta minutes if there was a previous snapshot
+            let deltaMins = 0;
+            if (lastSnapshotTime !== null) {
+                // difference in minutes
+                const diffInMs = now - lastSnapshotTime;
+                deltaMins = (diffInMs / 60000).toFixed(1);
+            }
+
+            // Update lastSnapshotTime to now
+            lastSnapshotTime = now;
+
+            // Insert new row at the TOP of the table (index 0)
+            const newRow = snapshotTableBody.insertRow(0);
+            newRow.insertCell(0).innerText = currentTime;
+            newRow.insertCell(1).innerText = meatVal; // includes "°C" or "Error"
+            newRow.insertCell(2).innerText = airVal;  // includes "°C" or "Error"
+            newRow.insertCell(3).innerText = deltaMins;
+        });
     </script>
 </body>
 </html>
